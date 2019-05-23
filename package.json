@@ -1,0 +1,9 @@
+{
+  "name": "docker-puppeteer",
+  "version": "1.0.0",
+  "description": "docker build for chrome puppeteer",
+  "main": "index.js",
+  "repository": "git@github.com:lecaoquochung/docker-puppeteer.git",
+  "author": "lecaoquochung@gmail.com",
+  "license": "MIT"
+}
