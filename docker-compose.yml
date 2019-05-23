@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  images:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /code
+    volumes:
+      - ".:/code"
+    entrypoint: ["sh", "-c", "sleep infinity"]
