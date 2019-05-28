@@ -1,6 +1,6 @@
 FROM node:11.12.0
 
-WORKDIR /code
+WORKDIR /build
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
@@ -33,7 +33,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Init yarn dependencies
-COPY package.json /code
+COPY package.json /build
 RUN yarn install
 
 RUN pwd;ls
@@ -44,8 +44,9 @@ RUN yarn add puppeteer \
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
     && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
+    && mkdir -p /home/pptruser/code \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /code/node_modules
+    && chown -R pptruser:pptruser /build/node_modules
 
 # # Run everything after as non-privileged user.
 USER pptruser
