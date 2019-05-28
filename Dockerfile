@@ -51,6 +51,6 @@ RUN yarn add puppeteer \
 # # Run everything after as non-privileged user.
 USER pptruser
 
-RUN cat /code/package.json
+RUN cat /build/package.json
 
 CMD ["google-chrome-unstable"]
