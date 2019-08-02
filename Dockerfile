@@ -36,7 +36,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
 
 # Init yarn dependencies
 COPY package.json /build
-RUN yarn policies set-version
+RUN npm install --global yarn
 RUN yarn install
 
 RUN pwd;ls
