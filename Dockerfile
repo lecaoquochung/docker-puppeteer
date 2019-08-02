@@ -15,11 +15,13 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 RUN apt-get update -y
 
+# dependencies
 RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
     libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing
+    ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
+    vim
 
 # If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
 # uncomment the following lines to have `dumb-init` as PID 1
@@ -34,6 +36,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
 
 # Init yarn dependencies
 COPY package.json /build
+RUN yarn policies set-version
 RUN yarn install
 
 RUN pwd;ls
@@ -51,6 +54,7 @@ RUN yarn add puppeteer \
 # # Run everything after as non-privileged user.
 USER pptruser
 
+RUN yarn --version
 RUN cat /build/package.json
 
 CMD ["google-chrome-unstable"]
