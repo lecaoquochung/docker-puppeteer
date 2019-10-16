@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  docker-puppeteer:
+  puppeteer:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,3 +9,5 @@ services:
     volumes:
       - ".:/code"
     entrypoint: ["sh", "-c", "sleep infinity"]
+    environment:
+      - .env
