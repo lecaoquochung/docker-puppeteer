@@ -62,6 +62,12 @@ USER pptruser
 ENV TZ=Asia/Tokyo
 
 # locale
+RUN sudo apt-get install -y locales task-japanese
+RUN sudo locale-gen ja_JP.UTF-8
+RUN sudo localedef -f UTF-8 -i ja_JP ja_JP
+ENV LANG ja_JP.UTF-8
+ENV LANGUAGE ja_JP:jp
+ENV LC_ALL ja_JP.UTF-8
 
 RUN yarn --version
 RUN cat /build/package.json

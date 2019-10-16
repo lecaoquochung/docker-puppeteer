@@ -9,5 +9,8 @@ services:
     volumes:
       - ".:/code"
     entrypoint: ["sh", "-c", "sleep infinity"]
-    environment:
+    env_file:
       - .env
+    environment:
+      - TZ=Asia/Tokyo
+      - LC_ALL=en_US.UTF-8
