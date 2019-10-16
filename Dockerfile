@@ -13,6 +13,13 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 
+ADD https://noto-website.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip /tmp
+RUN unzip /tmp/NotoSansCJKjp-hinted.zip && \
+    mkdir -p /usr/share/fonts/noto && \
+    cp *.otf /usr/share/fonts/noto && \
+    chmod 644 -R /usr/share/fonts/noto/ && \
+    fc-cache -fv
+
 RUN apt-get update -y
 
 # dependencies
