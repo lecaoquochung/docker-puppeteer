@@ -1,0 +1,19 @@
+  environment:
+  matrix:
+    - nodejs_version: "12.14.0"
+      FLAKINESS_DASHBOARD_NAME: Appveyor Chromium (Win + node12)
+  FLAKINESS_DASHBOARD_PASSWORD:
+    secure: secret
+
+build: off
+
+install:
+  - ps: $env:FLAKINESS_DASHBOARD_BUILD_URL="https://ci.appveyor.com/project/lecaoquochung/docker-puppeteer/builds/$env:APPVEYOR_BUILD_ID/job/$env:APPVEYOR_JOB_ID"
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+  - if "%nodejs_version%" == "12.14.0" (
+      npm run lint &&
+      npm run coverage  &&
+      npm run test-doclint &&
+      npm run test-types
+    )
