@@ -1,0 +1,58 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:12.14.0
+        environment:
+
+    working_directory: ~/code
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: 
+          name: Before
+          command: |
+            pwd;ls;whoami
+            node --version
+            yarn --version
+
+      - run:
+          name: Puppeteer dependencies
+          command: 'sh .circleci/setup_puppeteer.sh'
+
+      - run:
+          name: Sandbox user
+          command: |
+            # Add user so we don't need --no-sandbox.
+            # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
+            groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser
+            mkdir -p /home/pptruser/Downloads
+            mkdir -p /home/pptruser/code
+            chown -R pptruser:pptruser /home/pptruser
+            # chown -R pptruser:pptruser /build/node_modules
+            adduser pptruser sudo
+            echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+            su pptruser
+      
+      - run:
+          name: Install
+          command: |
+            yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: 
+          name: After
+          command: |
+            whoami;ls /home;
