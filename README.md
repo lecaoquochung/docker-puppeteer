@@ -1,6 +1,7 @@
 # docker-puppeteer
 Docker image for [puppeteer](https://github.com/puppeteer/puppeteer).
 
+[![CircleCI](https://circleci.com/gh/lecaoquochung/docker-puppeteer/tree/master.svg?style=svg)](https://circleci.com/gh/lecaoquochung/docker-puppeteer/tree/master)
 [![Build Status](https://travis-ci.org/lehungio/php-fpm.svg?branch=master)](https://travis-ci.org/lecaoquochung/docker-puppeteer) 
 [![Automated Build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/lecaoquochung/puppeteer/builds/)
 [![Windows Build Status](https://img.shields.io/appveyor/ci/lecaoquochung/docker-puppeteer/master.svg?logo=appveyor)](https://ci.appveyor.com/project/lecaoquochung/docker-puppeteer/branch/master)
@@ -50,3 +51,8 @@ services:
     entrypoint: ["sh", "-c", "sleep infinity"]
 ```
 
+## Reference
+- Puppeteer Github
+https://github.com/puppeteer/puppeteer
+- Headless Chrome Node.js API 
+https://pptr.dev/

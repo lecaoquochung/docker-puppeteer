@@ -43,10 +43,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
 
 # Init yarn dependencies
 COPY package.json /build
-RUN npm install --global yarn
 RUN yarn install
-
-RUN pwd;ls
 
 # Install puppeteer so it's available in the container.
 RUN yarn add puppeteer \
@@ -76,6 +73,7 @@ ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:jp
 ENV LC_ALL ja_JP.UTF-8
 
+RUN pwd;ls
 RUN yarn --version
 RUN cat /build/package.json
 
