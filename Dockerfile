@@ -28,7 +28,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
-    vim 
+    vim apt-utils git curl unzip sudo
 
 # If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
 # uncomment the following lines to have `dumb-init` as PID 1
@@ -40,6 +40,22 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
 # you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-unstable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+# Install aws-cli dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        software-properties-common \
+        apt-transport-https \
+        jq \
+        python3-pip \
+        python3-setuptools \
+        gpg-agent \
+        time \
+    && pip3 install --upgrade pip \
+    && apt-get -y autoremove \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install awscli
 
 # Init yarn dependencies
 COPY package.json /build
@@ -56,7 +72,6 @@ RUN yarn add puppeteer \
     && chown -R pptruser:pptruser /build/node_modules
 
 # Run everything after as non-privileged user.
-RUN apt-get install sudo
 RUN adduser pptruser sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER pptruser
@@ -66,9 +81,6 @@ USER pptruser
 ENV TZ=Asia/Tokyo
 
 # locale
-RUN sudo apt-get install -y locales task-japanese
-RUN sudo locale-gen ja_JP.UTF-8
-RUN sudo localedef -f UTF-8 -i ja_JP ja_JP
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:jp
 ENV LC_ALL ja_JP.UTF-8
@@ -76,5 +88,6 @@ ENV LC_ALL ja_JP.UTF-8
 RUN pwd;ls
 RUN yarn --version
 RUN cat /build/package.json
+RUN aws --version
 
 CMD ["google-chrome-unstable"]

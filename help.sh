@@ -2,6 +2,7 @@
 
 readonly NAME="puppeteer"
 readonly LOCALHOST="127.0.0.1"
+readonly FULL_PATH="$( cd "$( dirname "$0" )" && pwd )"
 
 helps() {
 	case $1 in
@@ -32,7 +33,11 @@ usage() {
 
 # run init
 run_init() {
-	echo ""
+	case $1 in
+		*|env|dotenv)
+			rsync -avz ${FULL_PATH}/env ${FULL_PATH}/.env
+		;;
+	esac
 }
 
 # run build
