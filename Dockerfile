@@ -80,11 +80,6 @@ USER pptruser
 # Reference https://stackoverflow.com/questions/40234847/docker-timezone-in-ubuntu-16-04-image
 ENV TZ=Asia/Tokyo
 
-# locale
-ENV LANG ja_JP.UTF-8
-ENV LANGUAGE ja_JP:jp
-ENV LC_ALL ja_JP.UTF-8
-
 RUN pwd;ls
 RUN yarn --version
 RUN cat /build/package.json
