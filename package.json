@@ -7,9 +7,13 @@
   "author": "lecaoquochung@gmail.com",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "cucumber": "cucumber-js -f json:report.json",
+    "report": "node report.js"
   },
   "dependencies": {
+    "cucumber": "^6.0.5",
+    "cucumber-html-reporter": "^5.2.0",
     "jest": "^24.9.0",
     "puppeteer": "^2.0.0"
   }
