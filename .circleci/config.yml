@@ -1,3 +1,5 @@
+# https://app.circleci.com/pipelines/github/lecaoquochung/docker-puppeteer
+
 version: 2
 jobs:
   build:
@@ -56,3 +58,9 @@ jobs:
           name: After
           command: |
             whoami;ls /home;
+
+      - run: 
+          name: Test
+          command: |
+            yarn test
+            yarn cucumber
