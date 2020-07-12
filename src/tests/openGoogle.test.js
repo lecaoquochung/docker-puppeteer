@@ -21,10 +21,9 @@ describe(
       await page.goto('https://google.co.jp');
     }, timeout)
 
-    afterAll(async done => {
+    afterAll(async () => {
       await page.close();
       await browser.close();
-      done();
     })
 
     it('should load without error', async () => {
