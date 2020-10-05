@@ -1,3 +1,9 @@
+# https://hub.docker.com/repository/docker/lecaoquochung/puppeteer
+# https://github.com/lecaoquochung/docker-puppeteer
+# scala-build
+# image: lecaoquochung/puppeteer:latest / branch master
+# image: lecaoquochung/puppeteer:dev    / branch dev
+
 FROM node:12.14.0
 
 WORKDIR /build
@@ -28,7 +34,10 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
-    vim apt-utils git curl unzip sudo
+    vim apt-utils git curl unzip sudo python3 screen bash zip tar postgresql-client
+
+RUN apt-get update -y \
+    && apt-get install -yq default-jre default-jdk software-properties-common
 
 # If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
 # uncomment the following lines to have `dumb-init` as PID 1
@@ -57,6 +66,17 @@ RUN apt-get update \
 
 RUN pip3 install awscli
 
+# Install sbt
+RUN curl -L -o /root/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
+	&& unzip /root/sbt.zip -d /root \
+	&& rm /root/sbt.zip
+
+# Put tools like aws and sbt in the PATH
+ENV PATH /root/.local/bin:/root/sbt/bin:/root/bin:${PATH}
+
+# sbt build
+RUN sbt sbtVersion
+
 # Init yarn dependencies
 COPY package.json /build
 RUN yarn install
@@ -76,6 +96,14 @@ RUN adduser pptruser sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER pptruser
 
+# Install sbt
+RUN curl -L -o /home/pptruser/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
+	&& unzip /home/pptruser/sbt.zip -d /home/pptruser \
+	&& rm /home/pptruser/sbt.zip
+
+# Put tools like aws and sbt in the PATH
+ENV PATH /home/pptruser/.local/bin:/home/pptruser/sbt/bin:/home/pptruser/bin:${PATH}
+
 # timezone
 # Reference https://stackoverflow.com/questions/40234847/docker-timezone-in-ubuntu-16-04-image
 ENV TZ=Asia/Tokyo
@@ -84,5 +112,6 @@ RUN pwd;ls
 RUN yarn --version
 RUN cat /build/package.json
 RUN aws --version
+RUN javac -version
 
 CMD ["google-chrome-stable"]
