@@ -34,10 +34,10 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
-    vim apt-utils git curl unzip sudo python3 screen bash zip tar postgresql-client
+    vim apt-utils git curl unzip sudo
 
 RUN apt-get update -y \
-    && apt-get install -yq default-jre default-jdk software-properties-common
+    && apt-get install -yq default-jre default-jdk software-properties-common python3 screen bash zip tar postgresql-client
 
 # If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
 # uncomment the following lines to have `dumb-init` as PID 1
