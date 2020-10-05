@@ -36,7 +36,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 4000000
+              "duration": 1000000
             }
           },
           {
@@ -49,7 +49,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 1000000
+              "duration": 0
             }
           },
           {
@@ -57,114 +57,6 @@
             "keyword": "Then ",
             "line": 8,
             "name": "I should be told \"TGIF\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:20"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1000000
-            }
-          }
-        ]
-      },
-      {
-        "id": "is-it-friday-yet?;today-is-or-is-not-friday",
-        "keyword": "Scenario",
-        "line": 13,
-        "name": "Today is or is not Friday",
-        "tags": [
-          {
-            "name": "@friday",
-            "line": 1
-          }
-        ],
-        "type": "scenario",
-        "steps": [
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 6,
-            "name": "today is \"Sunday\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:12"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1000000
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 7,
-            "name": "I ask whether it's Friday yet",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:16"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 0
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 8,
-            "name": "I should be told \"Nope\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:20"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1000000
-            }
-          }
-        ]
-      },
-      {
-        "id": "is-it-friday-yet?;today-is-or-is-not-friday",
-        "keyword": "Scenario",
-        "line": 14,
-        "name": "Today is or is not Friday",
-        "tags": [
-          {
-            "name": "@friday",
-            "line": 1
-          }
-        ],
-        "type": "scenario",
-        "steps": [
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 6,
-            "name": "today is \"anything else!\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:12"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 0
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 7,
-            "name": "I ask whether it's Friday yet",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:16"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 0
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 8,
-            "name": "I should be told \"Nope\"",
             "match": {
               "location": "features/step_definitions/stepdefs.js:20"
             },
