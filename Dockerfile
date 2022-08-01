@@ -4,7 +4,7 @@
 # image: lecaoquochung/puppeteer:latest / branch master
 # image: lecaoquochung/puppeteer:dev    / branch dev
 
-FROM node:12.14.0
+FROM node:16.16.0
 
 WORKDIR /build
 
@@ -14,7 +14,13 @@ WORKDIR /build
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst \
+# #7 22.79 Package ttf-freefont is not available, but is referred to by another package.
+#7 22.79 This may mean that the package is missing, has been obsoleted, or
+#7 22.79 is only available from another source
+#7 22.79 
+#7 23.01 E: Package 'ttf-freefont' has no installation candidate
+      # ttf-freefont \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
