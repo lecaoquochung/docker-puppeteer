@@ -1,4 +1,10 @@
-FROM node:12.14.0
+# https://hub.docker.com/repository/docker/lecaoquochung/puppeteer
+# https://github.com/lecaoquochung/docker-puppeteer
+# scala-build
+# image: lecaoquochung/puppeteer:latest / branch master
+# image: lecaoquochung/puppeteer:dev    / branch dev
+
+FROM node:16.16.0
 
 WORKDIR /build
 
@@ -8,7 +14,13 @@ WORKDIR /build
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
-    && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst \
+# #7 22.79 Package ttf-freefont is not available, but is referred to by another package.
+#7 22.79 This may mean that the package is missing, has been obsoleted, or
+#7 22.79 is only available from another source
+#7 22.79 
+#7 23.01 E: Package 'ttf-freefont' has no installation candidate
+      # ttf-freefont \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
@@ -29,6 +41,9 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
     vim apt-utils git curl unzip sudo
+
+RUN apt-get update -y \
+    && apt-get install -yq default-jre default-jdk software-properties-common python3 screen bash zip tar postgresql-client
 
 # If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
 # uncomment the following lines to have `dumb-init` as PID 1
@@ -57,6 +72,17 @@ RUN apt-get update \
 
 RUN pip3 install awscli
 
+# Install sbt
+RUN curl -L -o /root/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
+	&& unzip /root/sbt.zip -d /root \
+	&& rm /root/sbt.zip
+
+# Put tools like aws and sbt in the PATH
+ENV PATH /root/.local/bin:/root/sbt/bin:/root/bin:${PATH}
+
+# sbt build
+RUN sbt sbtVersion
+
 # Init yarn dependencies
 COPY package.json /build
 RUN yarn install
@@ -76,6 +102,14 @@ RUN adduser pptruser sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER pptruser
 
+# Install sbt
+RUN curl -L -o /home/pptruser/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
+	&& unzip /home/pptruser/sbt.zip -d /home/pptruser \
+	&& rm /home/pptruser/sbt.zip
+
+# Put tools like aws and sbt in the PATH
+ENV PATH /home/pptruser/.local/bin:/home/pptruser/sbt/bin:/home/pptruser/bin:${PATH}
+
 # timezone
 # Reference https://stackoverflow.com/questions/40234847/docker-timezone-in-ubuntu-16-04-image
 ENV TZ=Asia/Tokyo
@@ -84,5 +118,6 @@ RUN pwd;ls
 RUN yarn --version
 RUN cat /build/package.json
 RUN aws --version
+RUN javac -version
 
-CMD ["google-chrome-unstable"]
+CMD ["google-chrome-stable"]
