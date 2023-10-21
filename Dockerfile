@@ -40,7 +40,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
-    vim apt-utils git curl unzip sudo
+    vim apt-utils git curl unzip sudo whois dnsutils
 
 RUN apt-get update -y \
     && apt-get install -yq default-jre default-jdk software-properties-common python3 screen bash zip tar postgresql-client
@@ -68,8 +68,6 @@ RUN apt install -y python3-pip \
         python3-setuptools
 RUN apt -y autoremove
 RUN rm -rf /var/lib/apt/lists/*
-RUN python3 --version
-RUN pip3 --version
 
 # Install aws-cli 
 # Update package repository information and install python3-venv
@@ -131,5 +129,8 @@ RUN yarn --version
 RUN cat /build/package.json
 RUN aws --version
 RUN javac -version
+RUN python3 --version
+RUN pip3 --version
+RUN aws --version
 
 CMD ["google-chrome-stable"]

@@ -46,7 +46,7 @@ version: '3.7'
 services:
   puppeteer:
     container_name: 
-    image: lecaoquochung/puppeteer:node11.12.0
+    image: lecaoquochung/puppeteer:latest
     init: true
     tty: true
     stdin_open: true

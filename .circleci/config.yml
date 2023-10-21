@@ -4,7 +4,7 @@ version: 2.1
 parameters:
   feature-domain:
     type: string
-    default: ""
+    default: "google.co.jp"
 
   tool:
     type: string
@@ -20,7 +20,7 @@ parameters:
 
   test_suite_name:
     type: string
-    default: ""
+    default: "basic_test"
 
   trigger_api:
     default: true
@@ -35,6 +35,10 @@ parameters:
     type: boolean
 
   trigger_linux:
+    default: true
+    type: boolean
+
+  trigger_workflow_test_manual:
     default: true
     type: boolean
 
@@ -70,7 +74,7 @@ jobs:
             ./.circleci/env/var.sh
       - restore_cache:
           keys:
-          - v1-build-yarn-{{ checksum "package.json" }}
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
       - run:
           name: Submodule
           command: |
@@ -80,15 +84,15 @@ jobs:
           command: |
             ./.circleci/job/shared/build-dependencies.sh
       - run:
-          name: DOMAIN INFO
+          name: DOMAIN
           command: |
             ./.circleci/job/shared/server-domain-info.sh
       - run:
-          name: TEST SCOPE
+          name: SCOPE
           command: |
             ./.circleci/job/shared/scope.sh
       - save_cache:
-          key: v1-build-yarn-{{ checksum "package.json" }}
+          key: v1-build-latest-yarn-{{ checksum "package.json" }}
           paths:
             - "/home/pptruser/code/node_modules"
 
@@ -110,7 +114,7 @@ jobs:
             ./.circleci/env/var.sh
       - restore_cache:
           keys:
-          - v1-build-yarn-{{ checksum "package.json" }}
+          - v1-build-version-yarn-{{ checksum "package.json" }}
       - run:
           name: Submodule
           command: |
@@ -120,14 +124,109 @@ jobs:
           command: |
             ./.circleci/job/shared/build-dependencies.sh
       - run:
-          name: DOMAIN INFO
+          name: DOMAIN
           command: |
             ./.circleci/job/shared/server-domain-info.sh
       - run:
-          name: TEST SCOPE
+          name: SCOPE
           command: |
             ./.circleci/job/shared/scope.sh
       - save_cache:
-          key: v1-build-yarn-{{ checksum "package.json" }}
+          key: v1-build-version-yarn-{{ checksum "package.json" }}
           paths:
             - "/home/pptruser/code/node_modules"
+
+  test-latest:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 1
+    working_directory: /home/pptruser/code
+    docker:
+      - image: lecaoquochung/puppeteer:latest
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - restore_cache:
+          keys:
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+          - vi-build-latest-yarn-
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Split test by Test suite
+          command: |
+            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      - run:
+          name: Report
+          command: |
+            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
+
+            # Cucumber test report in JSON
+            yarn test:report coverage/feature/${TEST_SUITE_NAME}
+            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
+            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
+
+            # Cucumber test report in Junit
+            yarn test:junitreport coverage/feature/report
+
+            # Junit report with timestamp for parallel test report
+            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
+      - run:
+          name: Upload report to S3
+          command: |
+            aws s3 cp coverage/feature/ s3://docker-puppeteer/ --acl public-read --recursive
+          when: always
+
+workflows:
+  version: 2
+
+  test:
+    jobs:
+      - build-latest
+      - test-latest:
+          requires:
+            - build-latest
+      - build-version
+
+  # For CircleCI API manual trigger only
+  test_manual:
+    unless: << pipeline.parameters.trigger_workflow_test_manual >>
+    jobs:
+      - build-latest
+      - build-version
