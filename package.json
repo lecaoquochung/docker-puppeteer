@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
+    "feature": "cucumber-js",
     "cucumber": "cucumber-js -f json:report.json",
     "report": "node report.js"
   },
