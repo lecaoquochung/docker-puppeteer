@@ -1,4 +1,4 @@
-# docker-puppeteer
+# Docker-Puppeteer
 Docker image for [puppeteer](https://github.com/puppeteer/puppeteer).
 
 [![CircleCI](https://circleci.com/gh/lecaoquochung/docker-puppeteer/tree/master.svg?style=svg)](https://circleci.com/gh/lecaoquochung/docker-puppeteer/tree/master)
@@ -7,15 +7,23 @@ Docker image for [puppeteer](https://github.com/puppeteer/puppeteer).
 [![Windows Build Status](https://img.shields.io/appveyor/ci/lecaoquochung/docker-puppeteer/master.svg?logo=appveyor)](https://ci.appveyor.com/project/lecaoquochung/docker-puppeteer/branch/master)
 [![Build Status](https://api.cirrus-ci.com/github/lecaoquochung/docker-puppeteer.svg)](https://cirrus-ci.com/github/lecaoquochung/docker-puppeteer)
 
-## Supported branches
 
-- nodejs:latest (lecaoquochung/puppeteer:latest)
- [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/master/Dockerfile)
- - nodejs:11.12.0 (lecaoquochung/puppeteer:node11.12.0-dev)
- [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/11.12.0/Dockerfile)
+Welcome to Docker-Puppeteer, your go-to Docker image for using Puppeteer. Puppeteer is a Node.js library that provides a convenient high-level API for controlling Chrome or Chromium through the DevTools Protocol. Whether you want to run Chrome in headless mode or need the full Chrome experience, Puppeteer has you covered.
 
-## What is Puppeteer ?
-Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol. Puppeteer runs headless by default, but can be configured to run full (non-headless) Chrome or Chromium.
+## Supported Branches
+
+We offer the following Docker image branches for your convenience:
+
+- `nodejs:latest` (Docker image: `lecaoquochung/puppeteer:latest`)
+  [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/master/Dockerfile)
+
+- `nodejs:11.12.0` (Docker image: `lecaoquochung/puppeteer:node11.12.0-dev`)
+  [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/11.12.0/Dockerfile)
+
+## What is Puppeteer?
+
+Puppeteer simplifies browser automation tasks by providing a user-friendly way to interact with Chrome or Chromium. Whether you're scraping web data, generating PDFs, or running end-to-end tests, Puppeteer's got you covered with its easy-to-use API.
+
 
 ## Getting image
 ```sh

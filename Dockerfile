@@ -56,20 +56,32 @@ RUN apt-get update -y \
 #     browser.launch({executablePath: 'google-chrome-unstable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Install aws-cli dependencies
+# Install Pythong3 & Pip3
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         software-properties-common \
         apt-transport-https \
         jq \
-        python3-pip \
-        python3-setuptools \
         gpg-agent \
-        time \
-    && pip3 install --upgrade pip \
-    && apt-get -y autoremove \
-    && rm -rf /var/lib/apt/lists/*
+        time
+RUN apt install -y python3-pip \
+        python3-setuptools
+RUN apt -y autoremove
+RUN rm -rf /var/lib/apt/lists/*
+RUN python3 --version
+RUN pip3 --version
 
+# Install aws-cli 
+# Update package repository information and install python3-venv
+RUN apt-get update && apt-get install -y python3-venv
+
+# Create a virtual environment
+RUN python3 -m venv /venv
+
+# Activate the virtual environment
+ENV PATH="/venv/bin:$PATH"
+
+# Install awscli within the virtual environment
 RUN pip3 install awscli
 
 # Install sbt
