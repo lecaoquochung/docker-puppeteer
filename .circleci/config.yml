@@ -1,66 +1,307 @@
-# https://app.circleci.com/pipelines/github/lecaoquochung/docker-puppeteer
+version: 2.1
 
-version: 2
+# parameters only | params only
+parameters:
+  feature-domain:
+    type: string
+    default: "google.co.jp"
+
+  tool:
+    type: string
+    default: "puppeteer"
+
+  browser:
+    type: string
+    default: "chrome"
+
+  env:
+    type: string
+    default: "dev"
+
+  test_suite_name:
+    type: string
+    default: "basic_test"
+
+  trigger_api:
+    default: true
+    type: boolean
+
+  trigger_cli:
+    default: true
+    type: boolean
+
+  trigger_implementation:
+    default: true
+    type: boolean
+
+  trigger_linux:
+    default: true
+    type: boolean
+
+  trigger_workflow_test_manual:
+    default: true
+    type: boolean
+
+  os:
+    type: string
+    default: "linux"
+
+orbs:
+  win: circleci/windows@2.4.0
+  macos: circleci/macos@2.3.4
+  slack: circleci/slack@4.9.3
+  browser-tools: circleci/browser-tools@1.4.1
+
+working_directory: ~/code
+
+# job build only
 jobs:
-  build:
+  build-latest:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+    working_directory: /home/pptruser/code
     docker:
-      - image: node:12.14.0
+      - image: lecaoquochung/puppeteer:latest
         environment:
-
-    working_directory: ~/code
-
+          TZ: "Asia/Tokyo"
     steps:
       - checkout
-
-      # Download and cache dependencies
+      - run:
+          name: Update PATH and Define Environment Variable at Runtime
+          command: |
+            ./.circleci/env/var.sh
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
       - run: 
-          name: Before
+          name: Build Dependencies
           command: |
-            pwd;ls;whoami
-            node --version
-            yarn --version
-
+            ./.circleci/job/shared/build-dependencies.sh
       - run:
-          name: Puppeteer dependencies
-          command: 'sh .circleci/setup_puppeteer.sh'
-
-      - run:
-          name: Sandbox user
+          name: DOMAIN
           command: |
-            # Add user so we don't need --no-sandbox.
-            # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
-            groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser
-            mkdir -p /home/pptruser/Downloads
-            mkdir -p /home/pptruser/code
-            chown -R pptruser:pptruser /home/pptruser
-            # chown -R pptruser:pptruser /build/node_modules
-            adduser pptruser sudo
-            echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-            su pptruser
-      
+            ./.circleci/job/shared/server-domain-info.sh
       - run:
-          name: Install
+          name: SCOPE
           command: |
-            yarn install
-
+            ./.circleci/job/shared/scope.sh
       - save_cache:
+          key: v1-build-latest-yarn-{{ checksum "package.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - "/home/pptruser/code/node_modules"
 
-      - run: 
-          name: After
+  build-version:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+    working_directory: /home/pptruser/code
+    docker:
+      - image: lecaoquochung/puppeteer:node-18.17.0
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Update PATH and Define Environment Variable at Runtime
           command: |
-            whoami;ls /home;
+            ./.circleci/env/var.sh
+      - restore_cache:
+          keys:
+          - v1-build-version-yarn-{{ checksum "package.json" }}
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - run: 
+          name: Build Dependencies
+          command: |
+            ./.circleci/job/shared/build-dependencies.sh
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: SCOPE
+          command: |
+            ./.circleci/job/shared/scope.sh
+      - save_cache:
+          key: v1-build-version-yarn-{{ checksum "package.json" }}
+          paths:
+            - "/home/pptruser/code/node_modules"
 
-      - run: 
-          name: Test
+  test-latest:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 1
+    working_directory: /home/pptruser/code
+    docker:
+      - image: lecaoquochung/puppeteer:latest
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
           command: |
-            yarn test
-            yarn cucumber
+            ./.circleci/submodule.sh
+      - restore_cache:
+          keys:
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+          - vi-build-latest-yarn-
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Split test by Test suite
+          command: |
+            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      - run:
+          name: Report
+          command: |
+            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
+
+            # Cucumber test report in JSON
+            yarn test:report coverage/feature/${TEST_SUITE_NAME}
+            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
+            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
+
+            # Cucumber test report in Junit
+            yarn test:junitreport coverage/feature/report
+
+            # Junit report with timestamp for parallel test report
+            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
+  
+  test-version:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 1
+    working_directory: /home/pptruser/code
+    docker:
+      - image: lecaoquochung/puppeteer:node-18.17.0
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - restore_cache:
+          keys:
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+          - vi-build-latest-yarn-
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Split test by Test suite
+          command: |
+            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      - run:
+          name: Report
+          command: |
+            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
+
+            # Cucumber test report in JSON
+            yarn test:report coverage/feature/${TEST_SUITE_NAME}
+            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
+            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
+
+            # Cucumber test report in Junit
+            yarn test:junitreport coverage/feature/report
+
+            # Junit report with timestamp for parallel test report
+            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
+      - run:
+          name: Upload report to S3
+          command: |
+            ./.circleci/job/shared/aws-s3.sh
+          when: always
+
+workflows:
+  version: 2
+
+  test:
+    jobs:
+      - build-latest
+      - build-version
+      - test-latest:
+          requires:
+            - build-latest
+      - test-version:
+          requires:
+            - build-version
+
+  # For CircleCI API manual trigger only
+  test_manual:
+    unless: << pipeline.parameters.trigger_workflow_test_manual >>
+    jobs:
+      - build-latest
+      - build-version

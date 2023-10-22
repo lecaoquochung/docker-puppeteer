@@ -1,20 +1,24 @@
 {
   "name": "docker-puppeteer",
-  "version": "2.0.0-build-1",
-  "description": "docker build for chrome puppeteer",
+  "version": "3.0.0",
+  "description": "docker build for automation testing with puppeteer",
   "main": "index.js",
   "repository": "git@github.com:lecaoquochung/docker-puppeteer.git",
   "author": "lecaoquochung@gmail.com",
   "license": "MIT",
   "scripts": {
     "test": "jest",
+    "feature": "cucumber-js",
     "cucumber": "cucumber-js -f json:report.json",
-    "report": "node report.js"
+    "report": "node report.js",
+    "test:report": "node report.js",
+    "test:junitreport": "node report-junit.js"
   },
   "dependencies": {
-    "jest": "^26.4.2",
-    "puppeteer": "^5.3.1",
     "cucumber": "^6.0.5",
-    "cucumber-html-reporter": "^5.2.0"
+    "cucumber-html-reporter": "^5.2.0",
+    "cucumber-junit-convert": "^2.1.1",
+    "jest": "^26.4.2",
+    "puppeteer": "^5.3.1"
   }
 }

@@ -4,7 +4,7 @@
 # image: lecaoquochung/puppeteer:latest / branch master
 # image: lecaoquochung/puppeteer:dev    / branch dev
 
-FROM node:16.16.0
+FROM node:18.17.0
 
 WORKDIR /build
 
@@ -40,7 +40,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 lib
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget --fix-missing \
-    vim apt-utils git curl unzip sudo
+    vim apt-utils git curl unzip sudo whois dnsutils
 
 RUN apt-get update -y \
     && apt-get install -yq default-jre default-jdk software-properties-common python3 screen bash zip tar postgresql-client
@@ -56,21 +56,35 @@ RUN apt-get update -y \
 #     browser.launch({executablePath: 'google-chrome-unstable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Install aws-cli dependencies
+# Install Pythong3 & Pip3
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         software-properties-common \
         apt-transport-https \
         jq \
-        python3-pip \
-        python3-setuptools \
         gpg-agent \
-        time \
-    && pip3 install --upgrade pip \
-    && apt-get -y autoremove \
-    && rm -rf /var/lib/apt/lists/*
+        time
+RUN apt install -y python3-pip \
+        python3-setuptools
+RUN apt -y autoremove
+RUN rm -rf /var/lib/apt/lists/*
 
+# Install aws-cli 
+# Update package repository information and install python3-venv
+RUN apt-get update && apt-get install -y python3-venv
+
+# Create a virtual environment
+RUN python3 -m venv /venv
+
+# Activate the virtual environment
+ENV PATH="/venv/bin:$PATH"
+
+# Install awscli within the virtual environment
 RUN pip3 install awscli
+
+# groff utility to format and display AWS CLI command output
+RUN apt-get update
+RUN apt-get install -y groff
 
 # Install sbt
 RUN curl -L -o /root/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
@@ -119,5 +133,8 @@ RUN yarn --version
 RUN cat /build/package.json
 RUN aws --version
 RUN javac -version
+RUN python3 --version
+RUN pip3 --version
+RUN aws --version
 
 CMD ["google-chrome-stable"]
