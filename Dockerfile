@@ -4,7 +4,7 @@
 # image: lecaoquochung/puppeteer:latest / branch master
 # image: lecaoquochung/puppeteer:dev    / branch dev
 
-FROM node:18.17.0
+FROM node:21.0.0
 
 WORKDIR /build
 
