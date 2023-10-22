@@ -82,6 +82,10 @@ ENV PATH="/venv/bin:$PATH"
 # Install awscli within the virtual environment
 RUN pip3 install awscli
 
+# groff utility to format and display AWS CLI command output
+RUN apt-get update
+RUN apt-get install -y groff
+
 # Install sbt
 RUN curl -L -o /root/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
 	&& unzip /root/sbt.zip -d /root \
