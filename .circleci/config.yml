@@ -210,7 +210,7 @@ jobs:
       - run:
           name: Upload report to S3
           command: |
-            aws s3 cp coverage/feature/ s3://docker-puppeteer/ --acl public-read --recursive
+            ./.circleci/job/shared/aws-s3.sh
           when: always
 
 workflows:
