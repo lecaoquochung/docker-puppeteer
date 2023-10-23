@@ -172,6 +172,10 @@ jobs:
           command: |
             yarn cucumber -v; pip --version; 
       - run:
+          name: Jest
+          command: |
+            yarn test src/tests/openGoogle.test.js
+      - run:
           name: Split test by Test suite
           command: |
             xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
@@ -239,6 +243,10 @@ jobs:
           name: Dependencies
           command: |
             ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Jest
+          command: |
+            yarn test src/tests/openGoogle.test.js
       - run:
           name: Cucumber
           command: |
