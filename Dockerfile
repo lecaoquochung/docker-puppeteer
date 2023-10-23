@@ -134,6 +134,9 @@ ENV PATH /home/qa/.local/bin:/home/qa/sbt/bin:/home/qa/bin:${PATH}
 # Reference https://stackoverflow.com/questions/40234847/docker-timezone-in-ubuntu-16-04-image
 ENV TZ=Asia/Tokyo
 
+# puppeteer executable path
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+
 RUN pwd;ls
 RUN node --version
 RUN npm --version
