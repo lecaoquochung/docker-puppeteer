@@ -61,7 +61,7 @@ jobs:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:latest
         environment:
@@ -94,14 +94,14 @@ jobs:
       - save_cache:
           key: v1-build-latest-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/pptruser/code/node_modules"
+            - "/home/qa/code/node_modules"
 
   build-version:
     environment:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -134,7 +134,7 @@ jobs:
       - save_cache:
           key: v1-build-version-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/pptruser/code/node_modules"
+            - "/home/qa/code/node_modules"
 
   test-latest:
     environment:
@@ -144,7 +144,7 @@ jobs:
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
     parallelism: 1
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:latest
         environment:
@@ -182,19 +182,7 @@ jobs:
       - run:
           name: Report
           command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+            ./.circleci/job/shared/report.sh
           when: always
       - run:
           name: Test artifacts
@@ -220,7 +208,7 @@ jobs:
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
     parallelism: 1
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -258,19 +246,7 @@ jobs:
       - run:
           name: Report
           command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+            ./.circleci/job/shared/report.sh
           when: always
       - run:
           name: Test artifacts
