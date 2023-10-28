@@ -15,7 +15,7 @@
     "test:junitreport": "node report-junit.js"
   },
   "dependencies": {
-    "cucumber": "^6.0.5",
+    "@cucumber/cucumber": "^10.0.1",
     "cucumber-html-reporter": "^5.2.0",
     "cucumber-junit-convert": "^2.1.1",
     "jest": "^26.4.2",
