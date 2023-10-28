@@ -61,7 +61,7 @@ jobs:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/qa/code
+    working_directory: /home/pptruser/code
     docker:
       - image: lecaoquochung/puppeteer:latest
         environment:
@@ -94,7 +94,7 @@ jobs:
       - save_cache:
           key: v1-build-latest-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/qa/code/node_modules"
+            - "/home/pptruser/code/node_modules"
 
   build-version:
     environment:
@@ -144,7 +144,7 @@ jobs:
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
     parallelism: 1
-    working_directory: /home/qa/code
+    working_directory: /home/pptruser/code
     docker:
       - image: lecaoquochung/puppeteer:latest
         environment:
