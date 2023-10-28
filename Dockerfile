@@ -141,7 +141,7 @@ RUN pwd;ls
 RUN node --version
 RUN npm --version
 RUN yarn --version
-RUN yarn feature --version
+RUN sudo yarn feature --version
 RUN cat /build/package.json
 RUN aws --version
 RUN javac -version
