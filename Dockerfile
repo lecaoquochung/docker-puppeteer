@@ -111,14 +111,14 @@ RUN yarn install
 RUN yarn add puppeteer \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
-    && groupadd -r pptruser && useradd -r -g pptruser -G audio,video qa \
+    && groupadd -r qa && useradd -r -g qa -G audio,video qa \
     && mkdir -p /home/qa/Downloads \
     && mkdir -p /home/qa/code \
     && chown -R qa:qa /home/qa \
     && chown -R qa:qa /build/node_modules
 
 # Run everything after as non-privileged user.
-RUN adduser pptruser sudo
+RUN adduser qa sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER qa
 
@@ -141,6 +141,7 @@ RUN pwd;ls
 RUN node --version
 RUN npm --version
 RUN yarn --version
+RUN sudo yarn feature --version
 RUN cat /build/package.json
 RUN aws --version
 RUN javac -version
