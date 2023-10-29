@@ -1,3 +1,6 @@
 # Cucumber Feature
 e2e/cucumber/friday.feature
 e2e/cucumber/greeting.feature
+
+# Selenium
+e2e/cucumber/selenium.feature
