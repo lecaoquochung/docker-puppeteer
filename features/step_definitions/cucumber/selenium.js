@@ -5,6 +5,10 @@ const { expect } = require('chai');
 
 require("chromedriver");
 
+// Configure chrome headlease mode
+const chrome = require('selenium-webdriver/chrome');
+const chromeOptions = new chrome.Options().headless(); // TODO: switch to true for headless mode
+
 // driver setup
 const capabilities = Capabilities.chrome();
 capabilities.set('chromeOptions', { "w3c": false });

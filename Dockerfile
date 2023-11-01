@@ -149,5 +149,6 @@ RUN python3 --version
 RUN pip3 --version
 RUN aws --version
 RUN trcli
+RUN google-chrome --version
 
 CMD ["google-chrome-stable"]
