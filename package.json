@@ -1,6 +1,6 @@
 {
   "name": "docker-puppeteer",
-  "version": "3.0.1-rc.1",
+  "version": "3.0.1-rc2",
   "description": "docker build for automation testing with puppeteer",
   "main": "index.js",
   "repository": "git@github.com:lecaoquochung/docker-puppeteer.git",
