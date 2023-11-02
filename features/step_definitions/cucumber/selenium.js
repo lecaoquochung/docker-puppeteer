@@ -23,7 +23,3 @@ Then('the page title should start with {string}', {timeout: 60 * 1000}, async fu
     const isTitleStartWithCheese = title.toLowerCase().lastIndexOf(`${searchTerm}`, 0) === 0;
     expect(isTitleStartWithCheese).to.equal(true);
 });
-
-AfterAll(async function(){
-    await driver.quit();
-});
