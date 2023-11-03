@@ -22,10 +22,10 @@
     "jest": "^26.4.2",
     "moment": "^2.29.4",
     "playwright": "^1.39.0",
-    "puppeteer": "^5.3.1",
+    "puppeteer": "^21.5.0",
     "selenium-webdriver": "^4.14.0"
   },
   "devDependencies": {
-    "chromedriver": "^118.0.1"
+    "chromedriver": "^119.0.0"
   }
 }

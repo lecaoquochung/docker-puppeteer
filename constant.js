@@ -3,7 +3,10 @@ module.exports = Object.freeze({
   /// /////////////////////////////////////////////////
   // Global Constant - env vars / configuration
   /// /////////////////////////////////////////////////
-  headless: process.env.DEBUG === '1' ? false : true,
+  tool: process.env.TOOL || 'puppeteer', // puppeteer, playwright
+  browser: process.env.BROWSER || 'chrome', // chrome, firefox, safari, edge
+  os: process.env.OS || 'macos', // linux, windows, macos
+  headless: process.env.DEBUG === '1' ? false : 'new',
   slowMo: process.env.DEBUG === "1" ? 0 : 0,
   devtools: process.env.CONSOLE === "1" ? true : false,
   dumpio: process.env.DEBUG === "1" ? true : false,
@@ -13,9 +16,6 @@ module.exports = Object.freeze({
   argsWebkit: [],
   argsSandbox: ['--incognito', '--disable-notifications'], // puppeteer
   userDataDir: '/tmp',
-  tool: process.env.TOOL || 'puppeteer', // puppeteer, playwright
-  browser: process.env.BROWSER || 'chrome', // chrome, firefox, safari, edge
-  os: process.env.OS || 'linux', // linux, windows, macos
   githubAccessToken: process.env.GITHUB_ACCESS_TOKEN, // commit
   githubToken: process.env.GITHUB_TOKEN, // public package download
   env: process.env.ENV || 'dev',
@@ -30,4 +30,6 @@ module.exports = Object.freeze({
   puppeteerExecutablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '', // 'chromium' export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
   scenarioTimeout: parseInt(process.env.SCENARIO_TIMEOUT) || 900000, // maximumn: 15 mins timeout control by steps in scenario / Number.MAX_SAFE_INTEGER
   stepTimeout: parseInt(process.env.STEP_TIMEOUT) || 180000, // 3 mins
+  defaultWidth: parseInt(process.env.WIDTH) || 1680,
+  defaultHeight: parseInt(process.env.HEIGHT) || 920,
 })
