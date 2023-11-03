@@ -32,4 +32,8 @@ module.exports = Object.freeze({
   stepTimeout: parseInt(process.env.STEP_TIMEOUT) || 180000, // 3 mins
   defaultWidth: parseInt(process.env.WIDTH) || 1680,
   defaultHeight: parseInt(process.env.HEIGHT) || 920,
+  slackFileUploadApiUrl: process.env.SLACK_API_URL || 'https://slack.com/api/files.upload',
+  slackApiToken: process.env.SLACK_API_TOKEN || 'SLACK_API_TOKEN',
+  slackLocalChannel: process.env.SLACK_CHANNEL || 'SLACK_CHANNEL',
+  slackQaChannel: process.env.SLACK_CHANNEL_LOCAL || 'SLACK_CHANNEL_LOCAL',
 })
