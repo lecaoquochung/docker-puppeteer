@@ -95,6 +95,70 @@ jobs:
           paths:
             - "/home/pptruser/code/node_modules"
 
+  test-latest:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 2
+    working_directory: /home/pptruser/code
+    docker:
+      - image: lecaoquochung/puppeteer:latest
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - restore_cache:
+          keys:
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+          - vi-build-latest-yarn-
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Jest
+          command: |
+            yarn test src/jest/openGoogle.test.js
+      - run:
+          name: Split test by Test suite
+          command: |
+            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      - run:
+          name: Report
+          command: |
+            ./.circleci/job/shared/report.sh
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
+
   build-version:
     environment:
       - ENV=<< pipeline.parameters.env >>
@@ -135,70 +199,6 @@ jobs:
           paths:
             - "/home/qa/code/node_modules"
 
-  test-latest:
-    environment:
-      - ENV=<< pipeline.parameters.env >>
-      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
-      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-      - TOOL=<< pipeline.parameters.tool >>
-      - BROWSER=<< pipeline.parameters.browser >>
-    parallelism: 2
-    working_directory: /home/pptruser/code
-    docker:
-      - image: lecaoquochung/puppeteer:latest
-        environment:
-          TZ: "Asia/Tokyo"
-    steps:
-      - checkout
-      - run:
-          name: Submodule
-          command: |
-            ./.circleci/submodule.sh
-      - restore_cache:
-          keys:
-          - v1-build-latest-yarn-{{ checksum "package.json" }}
-          - vi-build-latest-yarn-
-      - run:
-          name: DOMAIN
-          command: |
-            ./.circleci/job/shared/server-domain-info.sh
-      - run:
-          name: Dependencies
-          command: |
-            ./.circleci/os/linux/dependencies.sh
-      - run:
-          name: Cucumber
-          command: |
-            yarn cucumber -v; pip --version; 
-      - run:
-          name: Jest
-          command: |
-            yarn test src/tests/openGoogle.test.js
-      - run:
-          name: Split test by Test suite
-          command: |
-            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
-      - run:
-          name: Report
-          command: |
-            ./.circleci/job/shared/report.sh
-          when: always
-      - run:
-          name: Test artifacts
-          command: |
-            ./.circleci/job/shared/artifact.sh
-          when: always
-      - persist_to_workspace:
-          root: .
-          paths:
-            - coverage
-      - store_test_results:
-          path: coverage/cucumber
-          when: always
-      - store_artifacts:
-          path: artifact
-          when: always
-  
   test-version:
     environment:
       - ENV=<< pipeline.parameters.env >>
@@ -233,7 +233,7 @@ jobs:
       - run:
           name: Jest
           command: |
-            yarn test src/tests/openGoogle.test.js
+            yarn test src/jest/openGoogle.test.js
       - run:
           name: Cucumber
           command: |
