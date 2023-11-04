@@ -86,6 +86,12 @@ RUN pip3 install awscli
 RUN apt-get update
 RUN apt-get install -y groff
 
+# Install n package
+RUN npm install -g n;
+
+# Install trcli
+RUN pip install trcli
+
 # Install sbt
 RUN curl -L -o /root/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
 	&& unzip /root/sbt.zip -d /root \
@@ -105,36 +111,43 @@ RUN yarn install
 RUN yarn add puppeteer \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
-    && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && mkdir -p /home/pptruser/code \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /build/node_modules
+    && groupadd -r qa && useradd -r -g qa -G audio,video qa \
+    && mkdir -p /home/qa/Downloads \
+    && mkdir -p /home/qa/code \
+    && chown -R qa:qa /home/qa \
+    && chown -R qa:qa /build/node_modules
 
 # Run everything after as non-privileged user.
-RUN adduser pptruser sudo
+RUN adduser qa sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER pptruser
+USER qa
 
 # Install sbt
-RUN curl -L -o /home/pptruser/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
-	&& unzip /home/pptruser/sbt.zip -d /home/pptruser \
-	&& rm /home/pptruser/sbt.zip
+RUN curl -L -o /home/qa/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
+	&& unzip /home/qa/sbt.zip -d /home/qa \
+	&& rm /home/qa/sbt.zip
 
 # Put tools like aws and sbt in the PATH
-ENV PATH /home/pptruser/.local/bin:/home/pptruser/sbt/bin:/home/pptruser/bin:${PATH}
+ENV PATH /home/qa/.local/bin:/home/qa/sbt/bin:/home/qa/bin:${PATH}
 
 # timezone
 # Reference https://stackoverflow.com/questions/40234847/docker-timezone-in-ubuntu-16-04-image
 ENV TZ=Asia/Tokyo
 
+# puppeteer executable path
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+
 RUN pwd;ls
+RUN node --version
+RUN npm --version
 RUN yarn --version
+RUN sudo yarn feature --version
 RUN cat /build/package.json
 RUN aws --version
 RUN javac -version
 RUN python3 --version
 RUN pip3 --version
 RUN aws --version
+RUN trcli
 
 CMD ["google-chrome-stable"]

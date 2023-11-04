@@ -9,3 +9,6 @@ export PATH="$PATH:/home/pptruser/.yarn/bin"
 
 # web driver
 npx playwright install
+
+# verify env var
+echo $PUPPETEER_EXECUTABLE_PATH

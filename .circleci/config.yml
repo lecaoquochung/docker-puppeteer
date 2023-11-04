@@ -101,7 +101,7 @@ jobs:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -134,7 +134,7 @@ jobs:
       - save_cache:
           key: v1-build-version-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/pptruser/code/node_modules"
+            - "/home/qa/code/node_modules"
 
   test-latest:
     environment:
@@ -143,7 +143,7 @@ jobs:
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
-    parallelism: 1
+    parallelism: 2
     working_directory: /home/pptruser/code
     docker:
       - image: lecaoquochung/puppeteer:latest
@@ -172,25 +172,17 @@ jobs:
           command: |
             yarn cucumber -v; pip --version; 
       - run:
+          name: Jest
+          command: |
+            yarn test src/tests/openGoogle.test.js
+      - run:
           name: Split test by Test suite
           command: |
             xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
       - run:
           name: Report
           command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+            ./.circleci/job/shared/report.sh
           when: always
       - run:
           name: Test artifacts
@@ -215,8 +207,8 @@ jobs:
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
-    parallelism: 1
-    working_directory: /home/pptruser/code
+    parallelism: 2
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -240,6 +232,10 @@ jobs:
           command: |
             ./.circleci/os/linux/dependencies.sh
       - run:
+          name: Jest
+          command: |
+            yarn test src/tests/openGoogle.test.js
+      - run:
           name: Cucumber
           command: |
             yarn cucumber -v; pip --version; 
@@ -250,19 +246,7 @@ jobs:
       - run:
           name: Report
           command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+            ./.circleci/job/shared/report.sh
           when: always
       - run:
           name: Test artifacts
