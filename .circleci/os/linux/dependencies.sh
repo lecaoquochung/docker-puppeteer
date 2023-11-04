@@ -1,11 +1,12 @@
-pwd;ls;whoami;date
-yarn install
+echo $SHELL
+pwd;ls;whoami;date;
+yarn upgrade; yarn install
 yarn --version
 
 yarn global add junit-report-merger
 yarn global bin
 
-export PATH="$PATH:/home/pptruser/.yarn/bin"
+export PATH="$PATH:/home/qa/.yarn/bin"
 
 # web driver
 npx playwright install

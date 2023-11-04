@@ -18,8 +18,8 @@ const env = constant.env
 
 // slack channel
 const SLACK_CHANNEL = (env === "local") ? 
-  constant.slackLocalChannel : 
-  constant.slackQaChannel
+  constant.slackChannelLocal : 
+  constant.slackChannel
 
 let currentUnixTime = moment()
 let currentTime = moment(currentUnixTime, moment.ISO_8601).format('YYYY-MM-DD[T]HH mm ss') + 'Z'
