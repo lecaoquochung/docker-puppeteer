@@ -147,6 +147,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 RUN cat /build/package.json
 RUN echo $SHELL
+RUN cat /etc/os-release
 RUN pwd;ls;whoami;date;
 RUN node --version
 RUN npm --version

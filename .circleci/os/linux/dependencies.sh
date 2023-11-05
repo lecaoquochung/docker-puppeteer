@@ -1,5 +1,12 @@
 echo $SHELL
+cat /etc/os-release
 pwd;ls;whoami;date;
+
+# Chrome version
+google-chrome --version
+sudo apt-get upgrade google-chrome-stable -y
+google-chrome --version
+
 yarn upgrade; yarn install
 yarn --version
 
