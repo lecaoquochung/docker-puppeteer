@@ -54,14 +54,13 @@ orbs:
 
 working_directory: ~/code
 
-# job build only
 jobs:
   build-latest:
     environment:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:latest
         environment:
@@ -94,14 +93,78 @@ jobs:
       - save_cache:
           key: v1-build-latest-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/pptruser/code/node_modules"
+            - "/home/qa/code/node_modules"
+
+  test-latest:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 2
+    working_directory: /home/qa/code
+    docker:
+      - image: lecaoquochung/puppeteer:latest
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - restore_cache:
+          keys:
+          - v1-build-latest-yarn-{{ checksum "package.json" }}
+          - vi-build-latest-yarn-
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Jest
+          command: |
+            yarn test src/jest/openGoogle.test.js
+      - run:
+          name: Split test by Test suite
+          command: |
+            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      - run:
+          name: Report
+          command: |
+            ./.circleci/job/shared/report.sh
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
 
   build-version:
     environment:
       - ENV=<< pipeline.parameters.env >>
       - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-    working_directory: /home/pptruser/code
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -134,84 +197,8 @@ jobs:
       - save_cache:
           key: v1-build-version-yarn-{{ checksum "package.json" }}
           paths:
-            - "/home/pptruser/code/node_modules"
+            - "/home/qa/code/node_modules"
 
-  test-latest:
-    environment:
-      - ENV=<< pipeline.parameters.env >>
-      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
-      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
-      - TOOL=<< pipeline.parameters.tool >>
-      - BROWSER=<< pipeline.parameters.browser >>
-    parallelism: 1
-    working_directory: /home/pptruser/code
-    docker:
-      - image: lecaoquochung/puppeteer:latest
-        environment:
-          TZ: "Asia/Tokyo"
-    steps:
-      - checkout
-      - run:
-          name: Submodule
-          command: |
-            ./.circleci/submodule.sh
-      - restore_cache:
-          keys:
-          - v1-build-latest-yarn-{{ checksum "package.json" }}
-          - vi-build-latest-yarn-
-      - run:
-          name: DOMAIN
-          command: |
-            ./.circleci/job/shared/server-domain-info.sh
-      - run:
-          name: Dependencies
-          command: |
-            ./.circleci/os/linux/dependencies.sh
-      - run:
-          name: Cucumber
-          command: |
-            yarn cucumber -v; pip --version; 
-      - run:
-          name: Jest
-          command: |
-            yarn test src/tests/openGoogle.test.js
-      - run:
-          name: Split test by Test suite
-          command: |
-            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
-      - run:
-          name: Report
-          command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
-          when: always
-      - run:
-          name: Test artifacts
-          command: |
-            ./.circleci/job/shared/artifact.sh
-          when: always
-      - persist_to_workspace:
-          root: .
-          paths:
-            - coverage
-      - store_test_results:
-          path: coverage/cucumber
-          when: always
-      - store_artifacts:
-          path: artifact
-          when: always
-  
   test-version:
     environment:
       - ENV=<< pipeline.parameters.env >>
@@ -219,8 +206,8 @@ jobs:
       - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
       - TOOL=<< pipeline.parameters.tool >>
       - BROWSER=<< pipeline.parameters.browser >>
-    parallelism: 1
-    working_directory: /home/pptruser/code
+    parallelism: 2
+    working_directory: /home/qa/code
     docker:
       - image: lecaoquochung/puppeteer:node-18.17.0
         environment:
@@ -233,8 +220,8 @@ jobs:
             ./.circleci/submodule.sh
       - restore_cache:
           keys:
-          - v1-build-latest-yarn-{{ checksum "package.json" }}
-          - vi-build-latest-yarn-
+          - v1-build-version-yarn-{{ checksum "package.json" }}
+          - vi-build-version-yarn-
       - run:
           name: DOMAIN
           command: |
@@ -246,7 +233,7 @@ jobs:
       - run:
           name: Jest
           command: |
-            yarn test src/tests/openGoogle.test.js
+            yarn test src/jest/openGoogle.test.js
       - run:
           name: Cucumber
           command: |
@@ -258,19 +245,7 @@ jobs:
       - run:
           name: Report
           command: |
-            echo $TEST_SUITE_NAME > coverage/feature/test_suite_name.txt
-
-            # Cucumber test report in JSON
-            yarn test:report coverage/feature/${TEST_SUITE_NAME}
-            echo "coverage/feature/${TEST_SUITE_NAME}.json" > coverage/feature/json_filelist.txt
-            xargs jq -s '[.[][]]' < coverage/feature/json_filelist.txt > coverage/feature/report.json
-
-            # Cucumber test report in Junit
-            yarn test:junitreport coverage/feature/report
-
-            # Junit report with timestamp for parallel test report
-            timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
-            cp coverage/feature/report.xml coverage/feature/report_$timestamp.xml
+            ./.circleci/job/shared/report.sh
           when: always
       - run:
           name: Test artifacts

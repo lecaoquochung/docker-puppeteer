@@ -1,3 +1,5 @@
+// jest-puppeteer preset
+// https://jestjs.io/docs/puppeteer
 const puppeteer = require('puppeteer');
 const timeout = 20000;
 testName = "open Google homepage";
@@ -16,8 +18,9 @@ describe(
       // Research sandbox
       // https://unix.stackexchange.com/questions/68832/what-does-the-chromium-option-no-sandbox-mean
       // https://www.google.com/googlebooks/chrome/big_00.html
-      browser = await puppeteer.launch({headless: true, args:['--no-sandbox']});
+      browser = await puppeteer.launch({headless: 'new', args:['--no-sandbox']});
       page = await browser.newPage();
+      // page = await global.__BROWSER_GLOBAL__.newPage();
       await page.goto('https://google.co.jp');
     }, timeout)
 

@@ -25,6 +25,10 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 
+# Update google-chrome-stable latest version
+# Google Git release notes https://chromium.googlesource.com/chromium/src/
+RUN apt-get upgrade google-chrome-stable -y
+
 ADD https://noto-website.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip /tmp
 RUN unzip /tmp/NotoSansCJKjp-hinted.zip && \
     mkdir -p /usr/share/fonts/noto && \
@@ -103,24 +107,28 @@ ENV PATH /root/.local/bin:/root/sbt/bin:/root/bin:${PATH}
 # sbt build
 RUN sbt sbtVersion
 
-# Init yarn dependencies
+# Init yarn dependencies with latest version
+# https://classic.yarnpkg.com/lang/en/docs/cli/self-update/
+RUN npm uninstall -g yarn
+RUN touch ~/.profile
+RUN curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
 COPY package.json /build
 RUN yarn install
 
-# Install puppeteer so it's available in the container.
+# Install qa so it's available in the container.
 RUN yarn add puppeteer \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
-    && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && groupadd -r qa && useradd -r -g qa -G audio,video qa \
     && mkdir -p /home/qa/Downloads \
     && mkdir -p /home/qa/code \
-    && chown -R pptruser:pptruser /home/qa \
-    && chown -R pptruser:pptruser /build/node_modules
+    && chown -R qa:qa /home/qa \
+    && chown -R qa:qa /build/node_modules
 
 # Run everything after as non-privileged user.
-RUN adduser pptruser sudo
+RUN adduser qa sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER pptruser
+USER qa
 
 # Install sbt
 RUN curl -L -o /home/qa/sbt.zip https://github.com/sbt/sbt/releases/download/v1.2.8/sbt-1.2.8.zip \
@@ -137,16 +145,20 @@ ENV TZ=Asia/Tokyo
 # puppeteer executable path
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-RUN pwd;ls
+RUN cat /build/package.json
+RUN echo $SHELL
+RUN cat /etc/os-release
+RUN pwd;ls;whoami;date;
 RUN node --version
 RUN npm --version
 RUN yarn --version
-RUN cat /build/package.json
+RUN sudo yarn feature --version
 RUN aws --version
 RUN javac -version
 RUN python3 --version
 RUN pip3 --version
 RUN aws --version
 RUN trcli
+RUN google-chrome --version
 
 CMD ["google-chrome-stable"]
