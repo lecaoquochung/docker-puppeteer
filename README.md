@@ -17,8 +17,8 @@ We offer the following Docker image branches for your convenience:
 - `nodejs:latest` (Docker image: `lecaoquochung/puppeteer:latest`)
   [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/master/Dockerfile)
 
-- `nodejs:11.12.0` (Docker image: `lecaoquochung/puppeteer:node11.12.0-dev`)
-  [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/11.12.0/Dockerfile)
+- `nodejs:18.17.0` (Docker image: `lecaoquochung/puppeteer:node-18.17.0`)
+  [Dockerfile](https://github.com/lecaoquochung/docker-puppeteer/blob/node-18.17.0/Dockerfile)
 
 ## What is Puppeteer?
 
@@ -64,3 +64,5 @@ services:
 https://github.com/puppeteer/puppeteer
 - Headless Chrome Node.js API 
 https://pptr.dev/
+- Chrome version for testing
+https://googlechromelabs.github.io/chrome-for-testing/

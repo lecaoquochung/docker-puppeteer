@@ -4,7 +4,7 @@
 # image: lecaoquochung/puppeteer:latest / branch master
 # image: lecaoquochung/puppeteer:dev    / branch dev
 
-FROM node:18.17.0
+FROM node:21.0.0
 
 WORKDIR /build
 
@@ -24,6 +24,10 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
+
+# Update google-chrome-stable latest version
+# Google Git release notes https://chromium.googlesource.com/chromium/src/
+RUN apt-get upgrade google-chrome-stable -y
 
 ADD https://noto-website.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip /tmp
 RUN unzip /tmp/NotoSansCJKjp-hinted.zip && \
@@ -103,11 +107,15 @@ ENV PATH /root/.local/bin:/root/sbt/bin:/root/bin:${PATH}
 # sbt build
 RUN sbt sbtVersion
 
-# Init yarn dependencies
+# Init yarn dependencies with latest version
+# https://classic.yarnpkg.com/lang/en/docs/cli/self-update/
+RUN npm uninstall -g yarn
+RUN touch ~/.profile
+RUN curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
 COPY package.json /build
 RUN yarn install
 
-# Install puppeteer so it's available in the container.
+# Install qa so it's available in the container.
 RUN yarn add puppeteer \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
@@ -143,11 +151,19 @@ RUN npm --version
 RUN yarn --version
 RUN sudo yarn feature --version
 RUN cat /build/package.json
+RUN echo $SHELL
+RUN cat /etc/os-release
+RUN pwd;ls;whoami;date;
+RUN node --version
+RUN npm --version
+RUN yarn --version
+RUN sudo yarn feature --version
 RUN aws --version
 RUN javac -version
 RUN python3 --version
 RUN pip3 --version
 RUN aws --version
 RUN trcli
+RUN google-chrome --version
 
 CMD ["google-chrome-stable"]
