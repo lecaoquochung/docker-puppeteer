@@ -145,6 +145,11 @@ ENV TZ=Asia/Tokyo
 # puppeteer executable path
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
+RUN pwd;ls
+RUN node --version
+RUN npm --version
+RUN yarn --version
+RUN sudo yarn feature --version
 RUN cat /build/package.json
 RUN echo $SHELL
 RUN cat /etc/os-release
