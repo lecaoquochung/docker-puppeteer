@@ -237,7 +237,7 @@ jobs:
       - run:
           name: Cucumber
           command: |
-            yarn cucumber -v; pip --version; 
+            yarn test src/jest/openGoogle.test.js
       - run:
           name: Split test by Test suite
           command: |
