@@ -237,7 +237,7 @@ jobs:
       - run:
           name: Cucumber
           command: |
-            yarn cucumber -v; pip --version; 
+            yarn test src/jest/openGoogle.test.js
       - run:
           name: Split test by Test suite
           command: |
@@ -333,6 +333,71 @@ jobs:
             ./.circleci/job/shared/aws-s3.sh
           when: always
 
+  test-node-21:
+    environment:
+      - ENV=<< pipeline.parameters.env >>
+      - FEATURE_DOMAIN=<< pipeline.parameters.feature-domain >>
+      - TEST_SUITE_NAME=<< pipeline.parameters.test_suite_name >>
+      - TOOL=<< pipeline.parameters.tool >>
+      - BROWSER=<< pipeline.parameters.browser >>
+    parallelism: 2
+    working_directory: /home/qa/code
+    docker:
+      - image: lecaoquochung/puppeteer:node-21
+        environment:
+          TZ: "Asia/Tokyo"
+    steps:
+      - checkout
+      - run:
+          name: Submodule
+          command: |
+            ./.circleci/submodule.sh
+      - run:
+          name: DOMAIN
+          command: |
+            ./.circleci/job/shared/server-domain-info.sh
+      - run:
+          name: Dependencies
+          command: |
+            ./.circleci/os/linux/dependencies.sh
+      - run:
+          name: Jest
+          command: |
+            yarn test src/jest/openGoogle.test.js
+      - run:
+          name: Cucumber
+          command: |
+            yarn cucumber -v; pip --version; 
+      - run:
+          name: Split test by Test suite
+          command: |
+            ./.circleci/job/shared/run-test.sh
+      - run:
+          name: Report
+          command: |
+            ./.circleci/job/shared/report.sh
+          when: always
+      - run:
+          name: Test artifacts
+          command: |
+            ./.circleci/job/shared/artifact.sh
+          when: always
+      - persist_to_workspace:
+          root: .
+          paths:
+            - coverage
+      - store_test_results:
+          path: coverage/cucumber
+          when: always
+      - store_artifacts:
+          path: artifact
+          when: always
+      - run:
+          name: Upload report to S3
+          command: |
+            ./.circleci/job/shared/aws-s3.sh
+          when: always
+
 workflows:
   version: 2
 
@@ -341,6 +406,7 @@ workflows:
       - build-latest
       - build-version
       - test-node-18
+      - test-node-21
       - test-latest:
           requires:
             - build-latest
