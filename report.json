@@ -1,1 +1,90 @@
-[]
+[
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "    \"\"\"\n      Documentation\n      https://cucumber.io/docs/guides/browser-automation/?lang=javascript\n    \"\"\"",
+        "id": "searching-for-cheese-on-google;finding-some-cheese-with-selenium",
+        "keyword": "Scenario",
+        "line": 4,
+        "name": "Finding some cheese with Selenium",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 875363162
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 9,
+            "name": "I am on the Google search page",
+            "match": {
+              "location": "features/step_definitions/cucumber/selenium.js:27"
+            },
+            "result": {
+              "status": "failed",
+              "duration": 462031439,
+              "error_message": "WebDriverError: unknown error: session deleted because of page crash\nfrom unknown error: cannot determine loading status\nfrom tab crashed\n  (Session info: chrome=126.0.6478.126)\n    at Object.throwDecodedError (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/error.js:521:15)\n    at parseHttpResponse (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/http.js:514:13)\n    at Executor.execute (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async thenableWebDriverProxy.execute (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/webdriver.js:742:17)\n    at async World.<anonymous> (/workspaces/docker-puppeteer/features/step_definitions/cucumber/selenium.js:28:5)"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 10,
+            "name": "I search for \"Cheese!\"",
+            "match": {
+              "location": "features/step_definitions/cucumber/selenium.js:32"
+            },
+            "result": {
+              "status": "skipped",
+              "duration": 0
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 11,
+            "name": "the page title should start with \"cheese\"",
+            "match": {
+              "location": "features/step_definitions/cucumber/selenium.js:38"
+            },
+            "result": {
+              "status": "skipped",
+              "duration": 0
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 87922044
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@selenium",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "searching-for-cheese-on-google",
+    "line": 2,
+    "keyword": "Feature",
+    "name": "Searching for Cheese on Google",
+    "tags": [
+      {
+        "name": "@selenium",
+        "line": 1
+      }
+    ],
+    "uri": "features/e2e/cucumber/selenium.feature"
+  }
+]

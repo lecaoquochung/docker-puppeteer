@@ -1,11 +1,12 @@
 {
   "name": "docker-puppeteer",
-  "version": "3.1.0-rc1",
+  "version": "4.0.0-rc1",
   "description": "Docker build for sandbox automated testing with Puppeteer, Playwright, Selenium, Cucumber, Jest, Chai, Mocha, and more.",
   "main": "index.js",
   "repository": "git@github.com:lecaoquochung/docker-puppeteer.git",
   "author": "lecaoquochung@gmail.com",
   "license": "MIT",
+  "type": "commonjs",
   "scripts": {
     "test": "jest -i",
     "feature": "cucumber-js",
@@ -18,6 +19,7 @@
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
     "@cucumber/cucumber": "^10.0.1",
+    "babel-jest": "^27.4.5",
     "chai": "^4.3.10",
     "chalk": "^5.3.0",
     "cliui": "^8.0.1",
@@ -32,17 +34,18 @@
     "moment": "^2.29.4",
     "npm": "^10.2.3",
     "os": "^0.1.2",
-    "playwright": "^1.39.0",
+    "playwright": "^1",
     "prettier": "^3.0.3",
-    "puppeteer": "^21.5.0",
-    "puppeteer-core": "^21.5.0",
+    "puppeteer": "^22",
+    "puppeteer-core": "^22",
     "request": "^2.88.2",
-    "selenium-webdriver": "^4.14.0",
+    "rimraf": "^5.0.7",
+    "selenium-webdriver": "^4",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2",
     "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
-    "chromedriver": "^119.0.1"
+    "chromedriver": "^126"
   }
 }

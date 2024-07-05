@@ -1,14 +1,15 @@
 // jest-puppeteer preset
 // https://jestjs.io/docs/puppeteer
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
+
 const timeout = 20000;
-testName = "open Google homepage";
+const testName = "open Google homepage";
 
 describe(
   '/ (' + testName + ')',
   () => {
     let page;
-    let browser ;
+    let browser;
 
     beforeAll(async () => {
       // Running as root without --no-sandbox is not supported. See https://crbug.com/638180
@@ -18,21 +19,21 @@ describe(
       // Research sandbox
       // https://unix.stackexchange.com/questions/68832/what-does-the-chromium-option-no-sandbox-mean
       // https://www.google.com/googlebooks/chrome/big_00.html
-      browser = await puppeteer.launch({headless: 'new', args:['--no-sandbox']});
+      browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
       page = await browser.newPage();
       // page = await global.__BROWSER_GLOBAL__.newPage();
       await page.goto('https://google.co.jp');
-    }, timeout)
+    }, timeout);
 
     afterAll(async () => {
       await page.close();
       await browser.close();
-    })
+    });
 
     it('should load without error', async () => {
-      let text = await page.evaluate(() => document.body.textContent);
+      const text = await page.evaluate(() => document.body.textContent);
       await expect(text).toContain('google');
     });
   },
   timeout
-)
+);

@@ -28,6 +28,7 @@ Given('I am on the Google search page', { timeout: 30000 }, async function () {
     await driver.get('http://www.google.com');
 });
 
+// https://www.selenium.dev/selenium/docs/api/javascript/index.html
 When('I search for {string}', { timeout: 30000 }, async function (searchTerm) {
     const element = await driver.findElement(By.css('textarea'));
     await element.sendKeys(searchTerm);
