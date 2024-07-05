@@ -34,6 +34,8 @@ BeforeAll(async function() {
   // TOOL: puppeteer, playwright, robotframework, selenium etc
   // BROWSERS: chrome, firefox, safari, etc
   console.log('VERSION:', packageJson.version);
+  console.log('ENV:', constant.env);
+  console.log('OS:', constant.os);
   console.log('TOOL:', constant.tool);
   console.log('BROWSERS:', constant.browser);
   console.log('SCENARIO TIMEOUT:', constant.scenarioTimeout);
@@ -68,8 +70,10 @@ Before(
           dumpio: constant.dumpio
         });
         
-        this.context = await this.browser.createIncognitoBrowserContext();
-        this.page = parseInt(constant.debugMode === 1) ? await this.browser.newPage({context: currentUnixTime}) : await this.context.newPage({context: currentUnixTime});
+        // this.context = await this.browser.createIncognitoBrowserContext();
+        // this.page = parseInt(constant.debugMode === 1) ? await this.browser.newPage({context: currentUnixTime}) : await this.context.newPage({context: currentUnixTime});
+        this.page = await this.browser.newPage()
+        this.browserVersion = await this.page.browser().version()
         await this.page.authenticate({username: constant.basicAuthUser, password: constant.basicAuthPassword});
         await this.page.setViewport({width: constant.defaultWidth, height: constant.defaultHeight});
         await installMouseHelper(this.page);
@@ -117,6 +121,10 @@ Before(
           this.browser = await firefox.launch({headless: constant.headless,slowMo: constant.slowMo,devtools: constant.devtools,dumpio: constant.dumpio,args: constant.args});
         } else {
           this.browser = await chromium.launch({headless: constant.headless,slowMo: constant.slowMo,devtools: constant.devtools,dumpio: constant.dumpio,args: constant.args});
+
+          // browser version
+          const session = await this.browser.newBrowserCDPSession();
+          this.browserVersion = await session.send('Browser.getVersion');
         }
     
         this.page = await this.browser.newPage({context: currentUnixTime});
@@ -149,6 +157,9 @@ Before(
       } else {
         // robotframework
       }
+
+      // Output Test Browser Information
+      console.log('BROWSER INFORMATION:', this.browserVersion);
     } catch (error) {
       // Handle the error as needed
       console.error("An error occurred in the Before hook:", error);

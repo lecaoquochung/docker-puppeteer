@@ -34,7 +34,7 @@
     "moment": "^2.29.4",
     "npm": "^10.2.3",
     "os": "^0.1.2",
-    "playwright": "^1.39.0",
+    "playwright": "^1",
     "prettier": "^3.0.3",
     "puppeteer": "^22",
     "puppeteer-core": "^22",

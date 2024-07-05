@@ -4,6 +4,7 @@ const { setWorldConstructor } = require('@cucumber/cucumber');
 class World {
   constructor() {
     this.browser;
+    this.browserVersion;
     this.clipboard;
     this.context;
     this.currentUnixTime;
