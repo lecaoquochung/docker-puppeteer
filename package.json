@@ -40,7 +40,7 @@
     "puppeteer-core": "^22",
     "request": "^2.88.2",
     "rimraf": "^5.0.7",
-    "selenium-webdriver": "^4.14.0",
+    "selenium-webdriver": "^4",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2",
     "wrap-ansi": "^9.0.0"

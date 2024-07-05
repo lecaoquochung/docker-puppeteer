@@ -269,6 +269,9 @@ jobs:
             ./.circleci/job/shared/aws-s3.sh
           when: always
 
+  # EOL gradually
+  # job test node 18 | job test-node-18
+  # Node 18 - chrome 126x driver uncompatible with selenium 4
   test-node-18:
     environment:
       - ENV=<< pipeline.parameters.env >>
@@ -304,10 +307,11 @@ jobs:
           name: Cucumber
           command: |
             yarn cucumber -v; pip --version; 
-      - run:
-          name: Split test by Test suite
-          command: |
-            xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
+      # EOL - v4.0.0
+      # - run:
+      #     name: Split test by Test suite
+      #     command: |
+      #       xargs -a ./features/testsuite/${TEST_SUITE_NAME}.txt -I {} circleci tests glob features/{} | circleci tests split --split-by=timings | xargs -I {} yarn feature -f json:coverage/feature/$TEST_SUITE_NAME.json {}
       - run:
           name: Report
           command: |

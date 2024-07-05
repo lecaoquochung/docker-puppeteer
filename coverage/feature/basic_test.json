@@ -3,229 +3,88 @@
     "description": "",
     "elements": [
       {
-        "description": "",
-        "id": "greeting;say-hello",
+        "description": "    \"\"\"\n      Documentation\n      https://cucumber.io/docs/guides/browser-automation/?lang=javascript\n    \"\"\"",
+        "id": "searching-for-cheese-on-google;finding-some-cheese-with-selenium",
         "keyword": "Scenario",
-        "line": 3,
-        "name": "Say hello",
+        "line": 4,
+        "name": "Finding some cheese with Selenium",
         "steps": [
           {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 4,
-            "name": "the greeter says hello",
-            "match": {
-              "location": "features/step_definitions/cucumber/greeting.js:5"
-            },
+            "keyword": "Before",
+            "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 694481
+              "duration": 875363162
             }
           },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 5,
-            "name": "I should have heard \"hello\"",
-            "match": {
-              "location": "features/step_definitions/cucumber/greeting.js:9"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 382449
-            }
-          }
-        ],
-        "tags": [],
-        "type": "scenario"
-      }
-    ],
-    "id": "greeting",
-    "line": 1,
-    "keyword": "Feature",
-    "name": "Greeting",
-    "tags": [],
-    "uri": "features/e2e/cucumber/greeting.feature"
-  },
-  {
-    "description": "  Everybody wants to know when it's Friday",
-    "elements": [
-      {
-        "description": "",
-        "id": "is-it-friday-yet?;today-is-or-is-not-friday",
-        "keyword": "Scenario Outline",
-        "line": 12,
-        "name": "Today is or is not Friday",
-        "steps": [
           {
             "arguments": [],
             "keyword": "Given ",
-            "line": 6,
-            "name": "today is \"Friday\"",
+            "line": 9,
+            "name": "I am on the Google search page",
             "match": {
-              "location": "features/step_definitions/stepdefs.js:12"
+              "location": "features/step_definitions/cucumber/selenium.js:27"
             },
             "result": {
-              "status": "passed",
-              "duration": 137211
+              "status": "failed",
+              "duration": 462031439,
+              "error_message": "WebDriverError: unknown error: session deleted because of page crash\nfrom unknown error: cannot determine loading status\nfrom tab crashed\n  (Session info: chrome=126.0.6478.126)\n    at Object.throwDecodedError (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/error.js:521:15)\n    at parseHttpResponse (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/http.js:514:13)\n    at Executor.execute (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async thenableWebDriverProxy.execute (/workspaces/docker-puppeteer/node_modules/selenium-webdriver/lib/webdriver.js:742:17)\n    at async World.<anonymous> (/workspaces/docker-puppeteer/features/step_definitions/cucumber/selenium.js:28:5)"
             }
           },
           {
             "arguments": [],
             "keyword": "When ",
-            "line": 7,
-            "name": "I ask whether it's Friday yet",
+            "line": 10,
+            "name": "I search for \"Cheese!\"",
             "match": {
-              "location": "features/step_definitions/stepdefs.js:16"
+              "location": "features/step_definitions/cucumber/selenium.js:32"
             },
             "result": {
-              "status": "passed",
-              "duration": 136393
+              "status": "skipped",
+              "duration": 0
             }
           },
           {
             "arguments": [],
             "keyword": "Then ",
-            "line": 8,
-            "name": "I should be told \"TGIF\"",
+            "line": 11,
+            "name": "the page title should start with \"cheese\"",
             "match": {
-              "location": "features/step_definitions/stepdefs.js:20"
+              "location": "features/step_definitions/cucumber/selenium.js:38"
             },
             "result": {
+              "status": "skipped",
+              "duration": 0
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
               "status": "passed",
-              "duration": 251322
+              "duration": 87922044
             }
           }
         ],
         "tags": [
           {
-            "name": "@friday",
-            "line": 1
-          }
-        ],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "is-it-friday-yet?;today-is-or-is-not-friday",
-        "keyword": "Scenario Outline",
-        "line": 13,
-        "name": "Today is or is not Friday",
-        "steps": [
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 6,
-            "name": "today is \"Sunday\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:12"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 111649
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 7,
-            "name": "I ask whether it's Friday yet",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:16"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 73970
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 8,
-            "name": "I should be told \"Nope\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:20"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 102632
-            }
-          }
-        ],
-        "tags": [
-          {
-            "name": "@friday",
-            "line": 1
-          }
-        ],
-        "type": "scenario"
-      },
-      {
-        "description": "",
-        "id": "is-it-friday-yet?;today-is-or-is-not-friday",
-        "keyword": "Scenario Outline",
-        "line": 14,
-        "name": "Today is or is not Friday",
-        "steps": [
-          {
-            "arguments": [],
-            "keyword": "Given ",
-            "line": 6,
-            "name": "today is \"anything else!\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:12"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 106787
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "When ",
-            "line": 7,
-            "name": "I ask whether it's Friday yet",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:16"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 73637
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 8,
-            "name": "I should be told \"Nope\"",
-            "match": {
-              "location": "features/step_definitions/stepdefs.js:20"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 330838
-            }
-          }
-        ],
-        "tags": [
-          {
-            "name": "@friday",
+            "name": "@selenium",
             "line": 1
           }
         ],
         "type": "scenario"
       }
     ],
-    "id": "is-it-friday-yet?",
+    "id": "searching-for-cheese-on-google",
     "line": 2,
     "keyword": "Feature",
-    "name": "Is it Friday yet?",
+    "name": "Searching for Cheese on Google",
     "tags": [
       {
-        "name": "@friday",
+        "name": "@selenium",
         "line": 1
       }
     ],
-    "uri": "features/friday.feature"
+    "uri": "features/e2e/cucumber/selenium.feature"
   }
 ]
