@@ -6,6 +6,7 @@
   "repository": "git@github.com:lecaoquochung/docker-puppeteer.git",
   "author": "lecaoquochung@gmail.com",
   "license": "MIT",
+  "type": "commonjs",
   "scripts": {
     "test": "jest -i",
     "feature": "cucumber-js",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
+    "babel-jest": "^27.4.5",
     "@cucumber/cucumber": "^10.0.1",
     "chai": "^4.3.10",
     "chalk": "^5.3.0",
@@ -43,6 +45,6 @@
     "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
-    "chromedriver": "^119.0.1"
+    "chromedriver": "^126"
   }
 }

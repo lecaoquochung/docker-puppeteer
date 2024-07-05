@@ -95,6 +95,7 @@ jobs:
           paths:
             - "/home/qa/code/node_modules"
 
+  # job test latest | job test-latest
   test-latest:
     environment:
       - ENV=<< pipeline.parameters.env >>
