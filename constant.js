@@ -36,4 +36,18 @@ module.exports = Object.freeze({
   slackApiToken: process.env.SLACK_API_TOKEN || 'SLACK_API_TOKEN',
   slackChannel: process.env.SLACK_CHANNEL || 'SLACK_CHANNEL',
   slackChannelLocal: process.env.SLACK_CHANNEL_LOCAL || 'SLACK_CHANNEL_LOCAL',
+
+  // timeout
+  defaultTimeout: 120000,
+
+  // option
+  // https://github.com/puppeteer/puppeteer/issues/1552
+  // networkidle0 comes handy for SPAs that load resources with fetch requests.
+  // networkidle2 comes handy for pages that do long-polling or any other side activity.
+  // load - consider navigation to be finished when the load event is fired.
+  // domcontentloaded - consider navigation to be finished when the DOMContentLoaded event is fired.
+  // networkidle0 - consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
+  // networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
+  waitUtilDefaultOption: 'networkidle0',
+  waitUtilPageReloadOption: 'networkidle2',
 })

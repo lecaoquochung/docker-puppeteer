@@ -118,7 +118,6 @@ class EvidenceComponent {
       }
     }
 
-    await page.waitForTimeout(parseInt(pageLoadDelay))
     await console.log(constant.infoPrefix + page.url())
 
     return b64string
@@ -157,7 +156,6 @@ class EvidenceComponent {
 
     if (parseInt(constant.debugMode) === 1) {
       if (await constant.tool === 'puppeteer') {
-        await page.waitForTimeout(3000) // handling After - function timed out
         getMetrics = await page.metrics()
 
         await console.log(constant.infoPrefix + 'Task Duration: ' + getMetrics.TaskDuration)

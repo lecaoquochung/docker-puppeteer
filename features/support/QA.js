@@ -1,3 +1,5 @@
+/* eslint-disable */
+const { setWorldConstructor } = require('@cucumber/cucumber');
 const { BeforeAll, Before, Given, When, Then, After, AfterAll } = require('@cucumber/cucumber');
 const { Builder, By, Capabilities, Key, until } = require('selenium-webdriver');
 var {setDefaultTimeout} = require('@cucumber/cucumber');
@@ -8,11 +10,12 @@ const path = require('path');
 const moment = require('moment');
 const puppeteer = require('puppeteer');
 const { chromium, firefox, webkit, devices } = require('playwright');
-const { expect } = require('chai');
+const expect = require('expect')
 require("chromedriver");
 
 // component
-const rootDir = path.resolve(__dirname, '../../..');
+// const constant = require(`${__base}src/constant`);
+const rootDir = path.resolve(__dirname, '../..');
 const constant = require(path.join(rootDir, 'constant.js'));
 const {installMouseHelper} = require(path.join(rootDir, 'src/puppeteer/component/install-mouse-helper.js'));
 const EvidenceComponent = require(path.join(rootDir, 'src/component/EvidenceComponent.js'));
@@ -27,51 +30,68 @@ const currentUnixTime = moment().valueOf();
 const date = moment(currentUnixTime).format('YYYYMMDD');
 setDefaultTimeout(constant.stepTimeout);
 
-BeforeAll(async function() {
-  // Write code here that turns the phrase above into concrete actions
-  // return 'pending';
-  // Output Test Information
-  // TOOL: puppeteer, playwright, robotframework, selenium etc
-  // BROWSERS: chrome, firefox, safari, etc
-  console.log('VERSION:', packageJson.version);
-  console.log('ENV:', constant.env);
-  console.log('OS:', constant.os);
-  console.log('TOOL:', constant.tool);
-  console.log('BROWSERS:', constant.browser);
-  console.log('SCENARIO TIMEOUT:', constant.scenarioTimeout);
-  console.log('STEP TIMEOUT:', constant.stepTimeout);
-});
+class QA {
+  constructor() {
+    this.browser;
+    this.browserVersion;
+    this.clipboard;
+    this.context;
+    this.currentUnixTime;
+    this.date
+    this.height;
+    this.healthcheck;
+    this.networkLogs;
+    this.notification;
+    this.page;
+    this.pageMetricsInit;
+    this.pageMetricsByStep;
+    this.scenario;
+    this.taskDuration;
+    this.version;
+    this.width;
+  }
 
-Before(
-  {
-    timeout: constant.stepTimeout,
-    tags: " @api or \
-      @e2e or \
-      @puppetter or \
-      @playwright or \
-      @selenium or \
-      @cucumber \
-    "
-  }, 
-  async function(scenario) {
-    try {
+  setTo(number) {
+    this.variable = number;
+  }
+
+  incrementBy(number) {
+    this.variable += number;
+  }
+
+  setTimestamp(timestamp) {
+    this.currentUnixTime = timestamp;
+  }
+
+  setDate(date) {
+    this.date = date;
+  }
+
+  isItFriday(today) {
+    if (today === "Friday") {
+      return "TGIF";
+    } else {
+      return "Nope";
+    }
+  }
+
+  async configBrowser (scenario) {
+    // try {
       setDefaultTimeout(constant.scenarioTimeout);
       this.version = packageJson.version;
       this.scenario = await scenario.pickle.name;
       this.currentUnixTime = await currentUnixTime;
-      this.date = await date;
+      this.date = date;
       this.taskDuration = 0; // performance testing - calculate page load from the beginning when the browser is opened if tastDuration = 0
 
       if (await constant.tool === 'puppeteer') {
         this.browser = await puppeteer.launch({
           executablePath: constant.puppeteerExecutablePath,
           headless: constant.headless, // Chrome new headless https://developer.chrome.com/articles/new-headless/
-          args: constant.argsSandbox, 
+          args: constant.args, 
           dumpio: constant.dumpio
         });
         
-        // this.context = await this.browser.createIncognitoBrowserContext();
-        // this.page = parseInt(constant.debugMode === 1) ? await this.browser.newPage({context: currentUnixTime}) : await this.context.newPage({context: currentUnixTime});
         this.page = await this.browser.newPage()
         this.browserVersion = await this.page.browser().version()
         await this.page.authenticate({username: constant.basicAuthUser, password: constant.basicAuthPassword});
@@ -159,31 +179,15 @@ Before(
       }
 
       // Output Test Browser Information
-      console.log('BROWSER INFORMATION:', this.browserVersion);
-    } catch (error) {
-      // Handle the error as needed
-      console.error("An error occurred in the Before hook:", error);
-      // throw the error to fail the scenario
-      throw error;
-    }
-  });
+      console.log('BROWSER VERSION:', this.browserVersion);
+      console.log('PAGE INFORMATION:', this.page);
+    // } catch (error) {
+    //   // Handle the error as needed
+    //   console.error("An error occurred:", error);
+    //   // throw the error to fail the scenario
+    //   throw error;
+    // }
+  }
+}
 
-  After(
-    {
-      tags: " \
-        @api or \
-        @e2e or \
-        @puppetter or \
-        @playwright or \
-        @selenium or \
-        @cucumber \
-      "
-    }, 
-    async function() {
-      await evidenceAction.closing(this.page, this.browser);
-    }
-  );
-
-  AfterAll(async function(){
-      // await driver.quit();
-  });
+setWorldConstructor(QA);
